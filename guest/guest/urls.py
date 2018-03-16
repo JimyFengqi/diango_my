@@ -27,6 +27,10 @@ urlpatterns = [
     path('login_action/',views.login_action),
     #添加event_manage界面与方法
     path('event_manage/',views.event_manage),
+    path('guest_manage/',views.guest_manage),
     #访问已经定义好的页面，如果没有登录，都会跳转到index页面
     path('accounts/login',views.index),
+    path('search_event_name/',views.search_event_name),
+    path('search_guest_name/',views.search_guest_name),
+    
 ]

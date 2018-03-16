@@ -5,6 +5,12 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.contrib import auth
 #导入login_required模块，来限制某个视图，加入这个模块之后，必须登录之后才能显示
 from django.contrib.auth.decorators import login_required
+#导入由sign.models里面创建的实体类内容
+from sign.models import Event,Guest
+#导入分页显示相关类，参数
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+
+
 
 # 创建第一个主视图，即登录视图
 def index(request):
@@ -52,8 +58,44 @@ def login_action(request):
 #这个event_manage 页面必须登陆之后才能显示    
 @login_required       
 def event_manage(request):
+    event_list = Event.objects.all()
     #采用cookies的方式读取浏览器的数据
     #username = request.COOKIES.get('user','')
     #通过session的方式读取浏览器数据
     username=request.session.get("user",'')
-    return render(request,"event_manage.html",{"user":username})
+    return render(request,"event_manage.html",{"user":username,"events":event_list})
+    
+@login_required
+def guest_manage(request):
+    username=request.session.get("user","")
+    #获取其全部的实体内容，即获得所有guest
+    guest_list=Guest.objects.all()
+    #对嘉宾进行分页显示，每一页显示3个人
+    paginator=Paginator(guest_list,2)
+    page=request.GET.get('page')
+    try:
+        contacts=paginator.page(page)
+    except PageNotAnInteger:
+        #如果page不是一个整数，先显示第一页
+        contacts = paginator.page(1)
+    except EmpyPage:
+        #如果page的页数超出做大值（9999），显示最后一页
+        contacts = paginator.page(paginator.num_pages)
+    return render(request,"guest_manage.html",{"user":username,"guests":contacts})
+  
+#查询方法    
+@login_required
+def search_event_name(request):
+    username=request.session.get("user","")
+    search_event_name=request.GET.get("name","")
+    event_list=Event.objects.filter(name=search_event_name)
+    return render(request,"event_manage.html",{"user":username,"events":event_list})
+    
+@login_required
+def search_guest_name(request):
+    username=request.session.get("user","")
+    search_guest_name=request.GET.get("realname","")
+    guest_list=Guest.objects.filter(realname=search_guest_name)
+    return render(request,"guest_manage.html",{"user":username,"guests":guest_list})
+
+    
