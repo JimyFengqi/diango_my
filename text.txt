@@ -1,0 +1,1 @@
+#十进制转二进制 #import sys denum1 = input("输入十进制数:") denum=int(denum1) print("denum1:",denum) print(type(denum1));print(type(denum)) binnum = [] # 二进制数 while(denum)>0: print(type(denum)) #print(denum%2,end='') binnum.append(denum%2) denum /= 2 print (binnum)
