@@ -48,4 +48,5 @@ sudo pip install PyQt5
 #django的一个辅助工具,可以使得html，css开发更加快捷
 sudo pip3 install django-bootstrap3
 sudo pip3 install matplotlib
+sudo apt-get install python3-tk
 sudo pip3 install scipy
