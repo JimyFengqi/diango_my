@@ -3,6 +3,7 @@ import os
 import time  
 import tushare as ts  
 import pandas as pd  
+import numpy as np
   
  
 def my_data_input(): 
@@ -29,18 +30,35 @@ my_data=[{'高价': '4.10', 'code':'002070','低价': '4.51', '成本价': 4.475
 def get_realtime_price(code_lists,my_data):
     #df2=pd.DataFrame(columns=['股票代码',"股票名字","当前价格","实时时间"])#创建一个空的数组格式
     df = ts.get_realtime_quotes(code_lists)
-    print ('2222')
     #current_time = df[['time']]
     e=df.loc[:,['code','name','price']]
     e.rename(columns={'code':'股票代码','name':'股票名称','price':"当前价格"},inplace=True)
-    e['成本价']  = [value['成本价'] for value in my_data]
-    e['低价']  = [float(value['低价']) for value in my_data]
-    e['高价']  = [value['高价'] for value in my_data]    
-  
-    #e['time'] = current_time
+    origin_price = [value['成本价'] for value in my_data]
+    low_price = [float(value['低价']) for value in my_data]
+    high_price = [value['高价'] for value in my_data] 
+    #current_price=e['当前价格']
+    #print (current_price)
+    new_current_price=e.iloc[:,2].values
+    new_current_price=[float(item) for item in new_current_price]
+    #print (origin_price)
+    #print (new_current_price)
+    #difference = [value, for i in range(len(origin_price)) value = origin_price[i]-new_current_price[i]]
+    difference =list(map(lambda x:x[0]-x[1],zip(new_current_price,origin_price))) 
+    rate=list(map(lambda x:x[0]/x[1]*100,zip(difference,origin_price)))
     
-  
+    #e['time'] = current_time
+    print (difference)
+
+
+    e['成本价'] =origin_price
+    e['差价']  = difference
+    
+    #e['低价']  = low_price
+    #e['高价']  =high_price
+    e['盈利率']  =rate
+    
     print (e)
+    
 
 
         
