@@ -18,14 +18,15 @@ def my_data_input():
     return data
 
 
-gu_code=['002070','002702','600202','600371','600462','601718','603899']
-my_data=[{'高价': '4.10', 'code':'002070','低价': '4.51', '成本价': 4.475},        
-         {'高价': '5.2', 'code':'002702','低价': '5.9', '成本价': 5.805},
-         {'高价': '8.1', 'code': '600202', '低价': '8.9', '成本价': 8.825}, 
-         {'高价': '10.1', 'code': '600371', '低价': '12.1', '成本价': 10.917},
-         {'高价': '5.1', 'code': '600462', '低价': '6.1', '成本价': 5.910}, 
-         {'高价': '5.0', 'code': '601718', '低价': '7.0', '成本价': 6.143},
-         {'高价': '30.0', 'code': '603899', '低价': '26.0', '成本价': 29.451}]
+#gu_code=['002070','002702','600202','600371','600462','601718','603899']
+gu_code=['002070','002702','600202','600462','601718','603899']
+my_data=[{'高价': '4.10', 'code':'002070','低价': '4.51', '成本价': 4.475,'数量':1000},        
+         {'高价': '5.2', 'code':'002702','低价': '5.9', '成本价': 5.805,'数量':1000},
+         {'高价': '8.1', 'code': '600202', '低价': '8.9', '成本价': 8.825,'数量':200}, 
+         #{'高价': '10.1', 'code': '600371', '低价': '12.1', '成本价': 10.917,'数量':300},
+         {'高价': '5.1', 'code': '600462', '低价': '6.1', '成本价': 5.910,'数量':500}, 
+         {'高价': '5.0', 'code': '601718', '低价': '7.0', '成本价': 6.143,'数量':1900},
+         {'高价': '30.0', 'code': '603899', '低价': '26.0', '成本价': 29.451,'数量':100}]
         
 def get_realtime_price(code_lists,my_data):
     #df2=pd.DataFrame(columns=['股票代码',"股票名字","当前价格","实时时间"])#创建一个空的数组格式
@@ -36,6 +37,7 @@ def get_realtime_price(code_lists,my_data):
     origin_price = [value['成本价'] for value in my_data]
     low_price = [float(value['低价']) for value in my_data]
     high_price = [value['高价'] for value in my_data] 
+    num = [value['数量'] for value in my_data] 
     #current_price=e['当前价格']
     #print (current_price)
     new_current_price=e.iloc[:,2].values
@@ -44,10 +46,12 @@ def get_realtime_price(code_lists,my_data):
     #print (new_current_price)
     #difference = [value, for i in range(len(origin_price)) value = origin_price[i]-new_current_price[i]]
     difference =list(map(lambda x:x[0]-x[1],zip(new_current_price,origin_price))) 
+    profit_loss=list(map(lambda x:x[0]*x[1],zip(difference,num))) 
     rate=list(map(lambda x:x[0]/x[1]*100,zip(difference,origin_price)))
+        
     
     #e['time'] = current_time
-    print (difference)
+    #print (difference)
 
 
     e['成本价'] =origin_price
@@ -56,11 +60,18 @@ def get_realtime_price(code_lists,my_data):
     #e['低价']  = low_price
     #e['高价']  =high_price
     e['盈利率']  =rate
+    e['利润']  =profit_loss
     
     print (e)
+    return rate
     
-
-
-        
-get_realtime_price(gu_code,my_data)
+flag= True
+while flag:
+    differnent_rate = get_realtime_price(gu_code,my_data)
+    for i_rate in differnent_rate:
+        if i_rate > 0:
+            print ('有股票开始盈利了，赶紧去看，盈利率 : %f' % i_rate)
+            flag =False
+            break
+    time.sleep(5)
         
